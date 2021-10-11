@@ -1,0 +1,218 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "Container",
+                            "backgroundImage": "https://messagecardplayground.azurewebsites.net/assets/TxP_Background.png",
+                            "items": [
+                                {
+                                    "type": "Image",
+                                    "horizontalAlignment": "center",
+                                    "url": "https://messagecardplayground.azurewebsites.net/assets/TxP_Flight.png",
+                                    "altText": "Departing airplane"
+                                }
+                            ],
+                            "bleed": true
+                        },
+                        {
+                            "type": "Container",
+                            "spacing": "none",
+                            "style": "emphasis",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "size": "extraLarge",
+                                    "weight": "lighter",
+                                    "color": "Accent",
+                                    "text": "Flight to delhi",
+                                    "wrap": true
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "spacing": "small",
+                                    "text": "  Air Lines flight AZ900 ",
+                                    "wrap": true
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "spacing": "none",
+                                    "text": "Confirmation code: 1234525",
+                                    "wrap": true
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "spacing": "none",
+                                    "text": "4 hours 15 minutes",
+                                    "wrap": true
+                                }
+                            ],
+                            "bleed": true,
+                            "height": "stretch"
+                        }
+                    ],
+                    "width": 45,
+                    "height": "stretch"
+                },
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "Container",
+                            "height": "stretch",
+                            "items": [
+                                {
+                                    "type": "ColumnSet",
+                                    "columns": [
+                                        {
+                                            "type": "Column",
+                                            "items": [
+                                                {
+                                                    "type": "TextBlock",
+                                                    "size": "extraLarge",
+                                                    "weight": "lighter",
+                                                    "text": "DEL",
+                                                    "wrap": true
+                                                }
+                                            ],
+                                            "width": "auto"
+                                        },
+                                        {
+                                            "type": "Column",
+                                            "verticalContentAlignment": "center",
+                                            "items": [
+                                                {
+                                                    "type": "Image",
+                                                    "url": "https://messagecardplayground.azurewebsites.net/assets/graydot2x2.png",
+                                                    "width": "10000px",
+                                                    "height": "2px"
+                                                }
+                                            ],
+                                            "width": "stretch"
+                                        },
+                                        {
+                                            "type": "Column",
+                                            "spacing": "small",
+                                            "verticalContentAlignment": "center",
+                                            "items": [
+                                                {
+                                                    "type": "Image",
+                                                    "url": "https://messagecardplayground.azurewebsites.net/assets/smallairplane.png",
+                                                    "height": "16px"
+                                                }
+                                            ],
+                                            "width": "auto"
+                                        },
+                                        {
+                                            "type": "Column",
+                                            "items": [
+                                                {
+                                                    "type": "TextBlock",
+                                                    "horizontalAlignment": "right",
+                                                    "size": "extraLarge",
+                                                    "weight": "lighter",
+                                                    "text": "JFK",
+                                                    "wrap": true
+                                                }
+                                            ],
+                                            "width": "auto"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "ColumnSet",
+                                    "columns": [
+                                        {
+                                            "type": "Column",
+                                            "items": [
+                                                {
+                                                    "type": "RichTextBlock",
+                                                    "inlines": [
+                                                        {
+                                                            "type": "TextRun",
+                                                            "size": "medium",
+                                                            "text": "9:45 AM\n",
+                                                            "wrap": true
+                                                        },
+                                                        {
+                                                            "type": "TextRun",
+                                                            "text": "23:00 AM\n",
+                                                            "isSubtle": true,
+                                                            "wrap": true
+                                                        },
+                                                        {
+                                                            "type": "TextRun",
+                                                            "text": "NEW DELHI\n",
+                                                            "isSubtle": true,
+                                                            "wrap": true
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "width": 1
+                                        },
+                                        {
+                                            "type": "Column",
+                                            "items": [
+                                                {
+                                                    "type": "RichTextBlock",
+                                                    "horizontalAlignment": "right",
+                                                    "inlines": [
+                                                        {
+                                                            "type": "TextRun",
+                                                            "size": "medium",
+                                                            "text": "21:12 PM\n",
+                                                            "wrap": true
+                                                        },
+                                                        {
+                                                            "type": "TextRun",
+                                                            "text": "23:00 Am\n",
+                                                            "isSubtle": true,
+                                                            "wrap": true
+                                                        },
+                                                        {
+                                                            "type": "TextRun",
+                                                            "text": "NEW YORK",
+                                                            "isSubtle": true,
+                                                            "wrap": true
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "width": 1
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "ActionSet",
+                                    "separator": true,
+                                    "actions": [
+                                        {
+                                            "type": "Action.Submit",
+                                            "title": "Check in",
+                                            "style": "positive"
+                                        },
+                                        {
+                                            "type": "Action.Submit",
+                                            "title": "View"
+                                        }
+                                    ],
+                                    "spacing": "medium"
+                                }
+                            ]
+                        }
+                    ],
+                    "width": 55
+                }
+            ],
+            "height": "stretch"
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.3"
+}

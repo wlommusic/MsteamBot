@@ -1,0 +1,98 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "TextBlock",
+            "size": "medium",
+            "weight": "bolder",
+            "text": "${title}",
+            "wrap": true
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "Image",
+                            "style": "Person",
+                            "url": "https://i.pinimg.com/originals/14/86/81/148681b09eade6d6a00092e4d2ef5fd9.jpg",
+                            "size": "medium"
+                        }
+                    ],
+                    "width": "auto"
+                },
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "weight": "Bolder",
+                            "text": "Dipta Ranjan panda",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "spacing": "None",
+                            "text": "11-10-21",
+                            "isSubtle": true,
+                            "wrap": true
+                        }
+                    ],
+                    "width": "stretch"
+                }
+            ]
+        },
+        {
+            "type": "TextBlock",
+            "text": "passionate about all things coding python/c/c++/js/",
+            "wrap": true
+        },
+        {
+            "type": "FactSet",
+            "facts": [
+                {
+                    "$data": "",
+                    "title": "Github:",
+                    "value": "https://github.com/wlommusic"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.ShowCard",
+            "title": "Set due date",
+            "card": {
+                "type": "AdaptiveCard",
+                "body": [
+                    {
+                        "type": "Input.Date",
+                        "id": "dueDate"
+                    },
+                    {
+                        "type": "Input.Text",
+                        "id": "comment",
+                        "placeholder": "Add a comment",
+                        "isMultiline": true
+                    }
+                ],
+                "actions": [
+                    {
+                        "type": "Action.Submit",
+                        "title": "OK"
+                    }
+                ],
+                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+            }
+        },
+        {
+            "type": "Action.OpenUrl",
+            "title": "View",
+            "url": "https://github.com/wlommusic"
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.3"
+}
