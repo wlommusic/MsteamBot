@@ -1,0 +1,80 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.3",
+    "speak": "Weather forecast for Monday is high of 62 and low of 42 degrees with a 20% chance of rainWinds will be 5 mph from the northeast",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Delhi, IN",
+            "size": "Large",
+            "isSubtle": true,
+            "wrap": true
+        },
+        {
+            "type": "TextBlock",
+            "text": "{{DATE(${formatEpoch(dt, 'yyyy-MM-ddTHH:mm:ssZ')}, SHORT)}} {{TIME(${formatEpoch(dt, 'yyyy-MM-ddTHH:mm:ssZ')})}}",
+            "spacing": "None",
+            "wrap": true
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": "auto",
+                    "items": [
+                        {
+                            "type": "Image",
+                            "url": "https://messagecardplayground.azurewebsites.net/assets/Mostly%20Cloudy-Square.png",
+                            "size": "Small"
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": "auto",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "${formatNumber((main.temp - 273.15), 0)}  ",
+                            "size": "ExtraLarge",
+                            "spacing": "None",
+                            "wrap": true
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "°C",
+                            "weight": "Bolder",
+                            "spacing": "Small",
+                            "wrap": true
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "Hi ${formatNumber((main.temp_max - 273) , 0)} C",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "Lo ${formatNumber((main.temp_min - 273) , 0)} C",
+                            "spacing": "None",
+                            "wrap": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
