@@ -67,7 +67,7 @@ class BookFlightDialog extends ComponentDialog {
 
     async getNumberOfParticipants(step) {
         step.values.name = step.result;
-        return await step.prompt(NUMBER_PROMPT, 'How many participants ( 1 - 20)?');
+        return await step.prompt(NUMBER_PROMPT, 'How many Seats ( 1 - 20)?');
     }
 
     async getDate(step) {

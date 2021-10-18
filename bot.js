@@ -88,7 +88,7 @@ class WEATHERBot extends ActivityHandler {
                 await this.sendSuggestedActions(context);
             }
             break;
-        case 'Book flight':
+        case 'Book Flight':
             console.log('Inside book flight Case');
             await this.conversationData.set(context, { endDialog: false });
             await this.BookFlightDialog.run(context, this.dialogState);

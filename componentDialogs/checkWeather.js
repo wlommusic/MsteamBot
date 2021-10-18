@@ -1,101 +1,113 @@
-const { WaterfallDialog, ComponentDialog } = require('botbuilder-dialogs');
+const { ActivityHandler } = require('botbuilder');
+const { CardFactory } = require('botbuilder');
+const axios = require('axios');
+// The accessor names for the conversation flow and user profile state property accessors.
+const CONVERSATION_FLOW_PROPERTY = 'CONVERSATION_FLOW_PROPERTY';
+const USER_PROFILE_PROPERTY = 'USER_PROFILE_PROPERTY';
+const weatherCard = require('../resources/cards/weather.json');
+const cardArr = [
+    weatherCard
+];
+// Identifies the last question asked.
+const question = {
+    name: 'name',
+    none: 'none'
+};
+const endDialog = '';
+const APIKEY = '4245b93331cedf3e4bb02af75c1d6010';
 
-const { ConfirmPrompt, ChoicePrompt, DateTimePrompt, NumberPrompt, TextPrompt } = require('botbuilder-dialogs');
+// Defines a bot for filling a user profile.
+class CheckWeatherDialog extends ActivityHandler {
+    constructor(conversationState, userState) {
+        super();
+        // The state property accessors for conversation flow and user profile.
+        this.conversationFlow = conversationState.createProperty(CONVERSATION_FLOW_PROPERTY);
+        this.userProfile = userState.createProperty(USER_PROFILE_PROPERTY);
 
-const { DialogSet, DialogTurnStatus } = require('botbuilder-dialogs');
+        // The state management objects for the conversation and user.
+        this.conversationState = conversationState;
+        this.userState = userState;
 
-const CHOICE_PROMPT = 'CHOICE_PROMPT';
-const CONFIRM_PROMPT = 'CONFIRM_PROMPT';
-const TEXT_PROMPT = 'TEXT_PROMPT';
-const NUMBER_PROMPT = 'NUMBER_PROMPT';
-const DATETIME_PROMPT = 'DATETIME_PROMPT';
-const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
-let endDialog = '';
+        this.onMessage(async (turnContext, next) => {
+            const flow = await this.conversationFlow.get(turnContext, { lastQuestionAsked: question.none });
+            const profile = await this.userProfile.get(turnContext, {});
 
-class CheckWeatherDialog extends ComponentDialog {
-    constructor(conservsationState, userState) {
-        super('CheckWeatherDialog');
+            await CheckWeatherDialog.fillOutUserProfile(flow, profile, turnContext);
 
-        this.addDialog(new TextPrompt(TEXT_PROMPT));
-        this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
-        this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
-        this.addDialog(new NumberPrompt(NUMBER_PROMPT));
-        this.addDialog(new DateTimePrompt(DATETIME_PROMPT));
-
-        this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-            this.firstStep.bind(this), // Ask confirmation if user wants to make reservation?
-            this.getName.bind(this), // Get name from user
-            this.getDate.bind(this), // Date of reservation
-            this.getTime.bind(this), // Time of reservation
-            this.confirmStep.bind(this), // Show summary of values entered by user and ask confirmation to make reservation
-            this.summaryStep.bind(this)
-
-        ]));
-
-        this.initialDialogId = WATERFALL_DIALOG;
+            // By calling next() you ensure that the next BotHandler is run.
+            await next();
+        });
     }
 
-    async run(turnContext, accessor) {
-        const dialogSet = new DialogSet(accessor);
-        dialogSet.add(this);
+    /**
+     * Override the ActivityHandler.run() method to save state changes after the bot logic completes.
+     */
+    async run(context) {
+        await super.run(context);
 
-        const dialogContext = await dialogSet.createContext(turnContext);
-        const results = await dialogContext.continueDialog();
-        if (results.status === DialogTurnStatus.empty) {
-            await dialogContext.beginDialog(this.id);
+        // Save any state changes. The load happened during the execution of the Dialog.
+        await this.conversationState.saveChanges(context, false);
+        await this.userState.saveChanges(context, false);
+    }
+
+    // Manages the conversation flow for filling out the user's profile.
+    static async fillOutUserProfile(flow, profile, turnContext) {
+        const input = turnContext.activity.text;
+        let result;
+        switch (flow.lastQuestionAsked) {
+        // If we're just starting off, we haven't asked the user for any information yet.
+        // Ask the user for their name and update the conversation flag.
+        case question.none:
+            await turnContext.sendActivity("Let's get started. What is your city name?");
+            flow.lastQuestionAsked = question.name;
+            break;
+
+        // If we last asked for their name, record their response, confirm that we got it.
+        // Ask them for their age and update the conversation flag.
+        case question.name:
+            result = this.validateName(input);
+            if (result.success) {
+                profile.name = result.name;
+                await turnContext.sendActivity(`I have your city name as ${ profile.name }.`);
+                const res = await this.weatherFunc(profile.name);
+                const msg = res;
+                await turnContext.sendActivity(
+                    {
+                        text: `todays weather:${ JSON.stringify(msg, null, 2) }`,
+                        attachments: [CardFactory.adaptiveCard(cardArr[0])]
+                    }
+                );
+                break;
+            } else {
+                // If we couldn't interpret their input, ask them for it again.
+                // Don't update the conversation flag, so that we repeat this step.
+                await turnContext.sendActivity(result.message || "I'm sorry, I didn't understand that.");
+                break;
+            }
         }
     }
 
-    async firstStep(step) {
-        endDialog = false;
-        return await step.prompt(CONFIRM_PROMPT, 'would you like to go ahead?', ['yes', 'no']);
-    }
-
-    async getName(step) {
-        if (step.result === true) {
-            return await step.prompt(TEXT_PROMPT, 'what is your name?');
-        }
-        if (step.result === false) {
-            await step.context.sendActivity('you choose no');
-            endDialog = true;
-            return await step.endDialog();
-        }
-    }
-
-    async getDate(step) {
-        step.values.name = step.result;
-        return await step.prompt(DATETIME_PROMPT, 'Enter the date');
-    }
-
-    async getTime(step) {
-        step.values.date = step.result;
-        return await step.prompt(DATETIME_PROMPT, 'Enter the time');
-    }
-
-    async confirmStep(step) {
-        step.values.time = step.result;
-        const msg = `verify your entered details: \n Name:${ step.values.name }\n Date:${ JSON.stringify(step.values.date) }\n Time:${ JSON.stringify(step.values.time) }`;
-        await step.context.sendActivity(msg);
-        return await step.prompt(CONFIRM_PROMPT, 'would you like to go ahead?', ['yes', 'no']);
-    }
-
-    async summaryStep(step) {
-        if (step.result === true) {
-            // logic
-            await step.context.sendActivity('sucessfull !!');
-            endDialog = true;
-            return await step.endDialog();
-        }
-        if (step.result === false) {
-            await step.context.sendActivity('you choose no');
-            endDialog = true;
-            return await step.endDialog();
-        }
-    }
+    // Validates name input. Returns whether validation succeeded and either the parsed and normalized
+    // value or a message the bot can use to ask the user again.
+    static validateName(input) {
+        const name = input && input.trim();
+        return name !== undefined
+            ? { success: true, name: name }
+            : { success: false, message: 'Please enter a name that contains at least one character.' };
+    };
 
     async isDialogComplete() {
         return await endDialog;
     }
-}
 
+    static async weatherFunc(cityname) {
+        try {
+            const resp = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${ cityname }&appid=${ APIKEY }`);
+            return ((resp.data));
+        } catch (err) {
+            // Handle Error Here
+            console.log(err);
+        }
+    }
+}
 module.exports.CheckWeatherDialog = CheckWeatherDialog;
