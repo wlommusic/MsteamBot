@@ -4,17 +4,13 @@ const axios = require('axios');
 // The accessor names for the conversation flow and user profile state property accessors.
 const CONVERSATION_FLOW_PROPERTY = 'CONVERSATION_FLOW_PROPERTY';
 const USER_PROFILE_PROPERTY = 'USER_PROFILE_PROPERTY';
-const weatherCard = require('../resources/cards/weather.json');
-const cardArr = [
-    weatherCard
-];
+
 // Identifies the last question asked.
 const question = {
     name: 'name',
     none: 'none'
 };
-const endDialog = '';
-const APIKEY = '4245b93331cedf3e4bb02af75c1d6010';
+var endDialog = '';
 
 // Defines a bot for filling a user profile.
 class CheckWeatherDialog extends ActivityHandler {
@@ -69,12 +65,93 @@ class CheckWeatherDialog extends ActivityHandler {
             if (result.success) {
                 profile.name = result.name;
                 await turnContext.sendActivity(`I have your city name as ${ profile.name }.`);
-                const res = await this.weatherFunc(profile.name);
-                const msg = res;
+                const weather = await this.fetchweatherFunc2(profile.name);
                 await turnContext.sendActivity(
                     {
-                        text: `todays weather:${ JSON.stringify(msg, null, 2) }`,
-                        attachments: [CardFactory.adaptiveCard(cardArr[0])]
+                        text: `todays weather: ${ weather.weather }`,
+                        attachments: [CardFactory.adaptiveCard(
+                            {
+
+                                $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+                                type: 'AdaptiveCard',
+                                version: '1.3',
+                                speak: 'Weather forecast for Monday is high of 62 and low of 42 degrees with a 20% chance of rainWinds will be 5 mph from the northeast',
+                                body: [
+                                    {
+                                        type: 'TextBlock',
+                                        text: `${ weather.city },${ weather.country }`,
+                                        size: 'Large',
+                                        isSubtle: true,
+                                        wrap: true
+                                    },
+                                    {
+                                        type: 'TextBlock',
+                                        text: new Date().toISOString().slice(0, 10),
+                                        spacing: 'None',
+                                        wrap: true
+                                    },
+                                    {
+                                        type: 'ColumnSet',
+                                        columns: [
+                                            {
+                                                type: 'Column',
+                                                width: 'auto',
+                                                items: [
+                                                    {
+                                                        type: 'Image',
+                                                        url: `http://openweathermap.org/img/w/${ weather.icon }.png`,
+                                                        size: 'Small'
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                type: 'Column',
+                                                width: 'auto',
+                                                items: [
+                                                    {
+                                                        type: 'TextBlock',
+                                                        text: `${ weather.weather }`,
+                                                        size: 'ExtraLarge',
+                                                        spacing: 'None',
+                                                        wrap: true
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                type: 'Column',
+                                                width: 'stretch',
+                                                items: [
+                                                    {
+                                                        type: 'TextBlock',
+                                                        text: '°C',
+                                                        weight: 'Bolder',
+                                                        spacing: 'Small',
+                                                        wrap: true
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                type: 'Column',
+                                                width: 'stretch',
+                                                items: [
+                                                    {
+                                                        type: 'TextBlock',
+                                                        text: `HI ${ parseFloat(weather.max_temp - 273.15).toFixed(2) } °C`,
+                                                        wrap: true
+                                                    },
+                                                    {
+                                                        type: 'TextBlock',
+                                                        text: `LO ${ parseFloat(weather.min_temp - 273.15).toFixed(2) } °C`,
+                                                        spacing: 'None',
+                                                        wrap: true
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        )]
                     }
                 );
                 break;
@@ -96,18 +173,34 @@ class CheckWeatherDialog extends ActivityHandler {
             : { success: false, message: 'Please enter a name that contains at least one character.' };
     };
 
-    async isDialogComplete() {
-        return await endDialog;
+    static async fetchweatherFunc2(cityname) {
+        const obj = {};
+        var url = `https://api.openweathermap.org/data/2.5/weather?q=${ cityname }&appid=${ process.env.APIKEY }`;
+        const resp = await axios.get(url);
+        obj.city = resp.data.name;
+        obj.weather = resp.data.weather[0].main;
+        obj.description = resp.data.weather[0].description;
+        obj.max_temp = resp.data.main.temp_min;
+        obj.min_temp = resp.data.main.temp_max;
+        obj.lat = resp.data.coord.lat;
+        obj.lon = resp.data.coord.lon;
+        obj.temp = resp.data.main.temp;
+        obj.country = resp.data.sys.country;
+        obj.icon = resp.data.weather[0].icon;
+        return obj;
+    };
+
+    async summaryStep(step) {
+        if (step.result === true) {
+            // Business
+            await step.context.sendActivity('thanks for checking out the bot');
+            endDialog = true;
+            return await step.endDialog();
+        }
     }
 
-    static async weatherFunc(cityname) {
-        try {
-            const resp = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${ cityname }&appid=${ APIKEY }`);
-            return ((resp.data));
-        } catch (err) {
-            // Handle Error Here
-            console.log(err);
-        }
+    async isDialogComplete() {
+        return await endDialog;
     }
 }
 module.exports.CheckWeatherDialog = CheckWeatherDialog;

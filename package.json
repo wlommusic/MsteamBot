@@ -16,6 +16,8 @@
         "url": "https://github.com"
     },
     "dependencies": {
+        "adaptivecards-templating": "^2.2.0",
+        "axios": "^0.22.0",
         "botbuilder": "~4.14.0",
         "botbuilder-dialogs": "^4.14.1",
         "dotenv": "~8.2.0",

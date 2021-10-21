@@ -5,7 +5,7 @@
             "type": "TextBlock",
             "size": "medium",
             "weight": "bolder",
-            "text": "${title}",
+            "text": "hi",
             "wrap": true
         },
         {
